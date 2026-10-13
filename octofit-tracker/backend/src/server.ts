@@ -6,6 +6,7 @@ import apiRouter from './routes/api.js';
 const app = express();
 const port = Number(process.env.PORT ?? 8000);
 const codespaceName = process.env.CODESPACE_NAME;
+// Use the forwarded Codespaces URL when available, otherwise target local development.
 export const apiBaseUrl = codespaceName
   ? `https://${codespaceName}-8000.app.github.dev`
   : 'http://localhost:8000';
@@ -21,6 +22,7 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
   response.status(500).json({ error: 'Internal server error' });
 });
 
+// Do not accept API traffic until MongoDB is connected successfully.
 async function startServer(): Promise<void> {
   await connectDatabase();
   app.listen(port, () => {
